@@ -1,6 +1,6 @@
 %start Expr
 %%
-Expr -> Result<i64, ()>: 
+Expr -> Result<i64, ()>:
       Expr '+' Term { Ok($1? + $3?) }
     | Expr '-' Term { Ok($1? - $3?) }
     | Term { $1 }
@@ -41,7 +41,7 @@ fn parse_int(s: &str) -> Result<i64, ()> {
 
 fn roll(number: i64, sides: i64) -> Result<i64, ()> {
     let mut total: i64 = 0;
-    for i in 0..number {
+    for _i in 0..number {
         total += rand::thread_rng().gen_range(1..sides+1)
     }
     Ok(total)
