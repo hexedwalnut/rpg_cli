@@ -183,7 +183,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>,
                                             app.dice_roll_results.push(format!("{}", e.pp(&lexer, &dice_y::token_epp)));
                                         }
                                         app.dice_roll_results.push(match res {
-                                            Some(Ok(r)) => format!("{}", r),
+                                            Some(Ok(r)) => format!("{} = {}", r.0, r.1),
                                             _ => format!("Unable to evaluate expression.")
                                         });
                                     }
@@ -422,32 +422,3 @@ fn active_frame<'a, B: Backend>(f: &mut Frame<B>, app: &'a App, layout: &Vec<Rec
         }
     }
 }
-
-/*fn main() {
-    let lexerdef = dice_l::lexerdef();
-    let stdin = io::stdin();
-    loop {
-        print!(">>> ");
-        io::stdout().flush().ok();
-        match stdin.lock().lines().next() {
-            Some(Ok(ref l)) => {
-                if l.trim().is_empty() {
-                    continue;
-                }
-                // Now we create a lexer with the `lexer` method with which
-                // we can lex an input.
-                let lexer = lexerdef.lexer(l);
-                // Pass the lexer to the parser and lex and parse the input.
-                let (res, errs) = dice_y::parse(&lexer);
-                for e in errs {
-                    println!("{}", e.pp(&lexer, &dice_y::token_epp));
-                }
-                match res {
-                    Some(Ok(r)) => println!("Result: {:?}", r),
-                    _ => eprintln!("Unable to evaluate expression.")
-                }
-            }
-            _ => break
-        }
-    }
-}*/
