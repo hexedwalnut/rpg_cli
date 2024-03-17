@@ -53,8 +53,15 @@ fn parse_int(s: &str) -> Result<(i64, String), ()> {
 
 fn roll(number: i64, sides: i64) -> Result<(i64, String), ()> {
     let mut total: i64 = 0;
-    for _i in 0..number {
-        total += rand::thread_rng().gen_range(1..sides+1)
+    let mut s_output: String = format!("{}d{} (", number, sides);
+    for i in 0..number {
+        let roll = rand::thread_rng().gen_range(1..sides+1);
+        total += roll;
+        s_output.push_str(format!("{}", roll).as_str());
+        if i < number - 1 {
+            s_output.push_str(", ");
+        }
     }
-    Ok((total, format!("{}d{} ({})", number, sides, total)))
+    s_output.push_str(")");
+    Ok((total, s_output))
 }

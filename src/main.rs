@@ -174,18 +174,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>,
                                         app.dice_roll_results.clear();
                                     }
                                     KeyCode::Enter => {
-                                        let command: String = app.input.drain(..).collect();
-                                        let lexerdef = dice_l::lexerdef();
-                                        let lexer = lexerdef.lexer(command.as_str());
-                                        // Pass the lexer to the parser and lex and parse the input.
-                                        let (res, errs) = dice_y::parse(&lexer);
-                                        for e in errs {
-                                            app.dice_roll_results.push(format!("{}", e.pp(&lexer, &dice_y::token_epp)));
-                                        }
-                                        app.dice_roll_results.push(match res {
-                                            Some(Ok(r)) => format!("{} = {}", r.0, r.1),
-                                            _ => format!("Unable to evaluate expression.")
-                                        });
+                                        app.dice_roll_results.push(eval_dice_roll(app.input.drain(..).collect()));           
                                     }
                                     KeyCode::Char(c) => {
                                         app.input.push(c);
@@ -421,4 +410,30 @@ fn active_frame<'a, B: Backend>(f: &mut Frame<B>, app: &'a App, layout: &Vec<Rec
             f.render_widget(active, layout[1]);
         }
     }
+}
+
+fn eval_dice_roll(command: String) -> String {
+    let mut output: String = String::new();
+    let parts: Vec<_> = command.split(',').collect();
+
+    let lexerdef = dice_l::lexerdef();
+    for i in 0..parts.len() {
+        let part = parts[i];
+        let lexer = lexerdef.lexer(part);
+        let (res, errs) = dice_y::parse(&lexer);
+        for e in errs {
+            output.push_str(format!("{}", 
+                    e.pp(&lexer, &dice_y::token_epp)).as_str());
+        }
+        let result = match res {
+            Some(Ok(r)) => format!("{} = {}", r.0, r.1),
+            _ => format!("Unable to evaluate expression.")
+        };
+        output.push_str(result.as_str());
+
+        if i < parts.len() - 1 {
+            output.push_str(", ");
+        }
+    }
+    return output;
 }
